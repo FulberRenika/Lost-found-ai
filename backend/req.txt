@@ -1,5 +1,4 @@
 flask
 flask-cors
-sentence-transformers
-torch
-gunicorn
+scikit-learn
+numpy
