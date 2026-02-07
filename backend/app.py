@@ -1,48 +1,48 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from sentence_transformers import SentenceTransformer, util
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-# Initialize Flask app
 app = Flask(__name__)
 CORS(app)
 
-# Load AI model (lightweight, fast, accurate)
-model = SentenceTransformer("all-MiniLM-L6-v2")
+vectorizer = TfidfVectorizer(
+    lowercase=True,
+    stop_words="english",
+    ngram_range=(1, 2)
+)
+
+def compute_similarity(a, b):
+    tfidf = vectorizer.fit_transform([a, b])
+    return float(cosine_similarity(tfidf[0:1], tfidf[1:2])[0][0])
+
+def confidence_label(score):
+    if score >= 0.80:
+        return "High confidence match"
+    elif score >= 0.65:
+        return "Possible match"
+    return "Low confidence"
 
 @app.route("/")
 def home():
-    return "Lost & Found AI Backend Running"
+    return "Lost & Found AI Backend Running (TF-IDF)"
 
 @app.route("/match", methods=["POST"])
 def match_items():
-    data = request.get_json()
+    data = request.get_json(force=True) or {}
 
-    lost_text = data.get("lost", "")
-    found_text = data.get("found", "")
+    lost = (data.get("lost") or "").strip()
+    found = (data.get("found") or "").strip()
 
-    # Convert text to embeddings
-    embeddings = model.encode(
-        [lost_text, found_text],
-        convert_to_tensor=True
-    )
+    if not lost or not found:
+        return jsonify({"error": "Both lost and found texts are required"}), 400
 
-    # Calculate cosine similarity
-    similarity_score = util.cos_sim(
-        embeddings[0],
-        embeddings[1]
-    ).item()
-
-    # Confidence level logic (judge-friendly)
-    if similarity_score >= 0.85:
-        confidence = "High confidence match"
-    elif similarity_score >= 0.70:
-        confidence = "Possible match"
-    else:
-        confidence = "Low confidence"
+    score = compute_similarity(lost, found)
 
     return jsonify({
-        "similarity": round(similarity_score, 2),
-        "confidence": confidence
+        "similarity": round(score, 4),
+        "similarity_percentage": round(score * 100, 2),
+        "confidence": confidence_label(score)
     })
 
 if __name__ == "__main__":

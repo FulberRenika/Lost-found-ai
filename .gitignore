@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+ENV/
+.Python
+pip-log.txt
+pip-delete-this-directory.txt
+.pytest_cache/
+.pytest_cache/
+.pyc
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+pip-wheel-metadata/
+
+# Installer logs
+pip-log.txt
+
+# Virtualenv
+.env
+.env.*
+
+# VS Code
+.vscode/
+
+# IDEs
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Frontend build
+/dist
+/build
+
+# Secrets
+.env
+*.pem
+*.key
+credentials.json
+
+# Logs
+logs/
+*.log
+
+# Database
+*.sqlite3
+
+# Others
+*.swp
+*.swo
+
+# Temporary files
+tmp/
+
+# Notebook checkpoints
+.ipynb_checkpoints/
